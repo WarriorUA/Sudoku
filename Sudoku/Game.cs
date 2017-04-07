@@ -1,42 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using Timer = System.Threading.Timer;
+using Timer = System.Windows.Forms.Timer;
 
 namespace Sudoku
 {
     public partial class Game : Form
     {
-        private Action Update;
-        public int time = 0;
+
+        SudokuGraund graund = new SudokuGraund();
+        public int Time;
         public Game()
         {
             InitializeComponent();
-            TimerCallback callback = new TimerCallback(UpdateTime);
-            Timer timer = new Timer(callback, 0, 0, 2000);
-            Update=new Action(UpdateMethod);
+            Game_Load();
+            Timer timer = new Timer();
+            timer.Interval = 1000;
+            timer.Tick += Timer_Tick;
+            timer.Start();
         }
 
-        public void UpdateMethod()
+        void Timer_Tick(object sender, EventArgs e)
         {
-
-            labelTime.Text = time.ToString();
+            ++Time;
+            labelTime.Text = Time.ToString();
         }
-        public void UpdateTime(Object source)
+        private void Game_Load()
         {
-            ++time;
-            Game game = this;
-            game.Invoke(game.Update);
-        }
-        private void Game_Load(object sender, EventArgs e)
-        {
-            SudokuGraund graund = new SudokuGraund();
             for (int i = 0; i < 9; ++i)
             {
                 for (int j = 0; j < 9; ++j)
@@ -58,7 +49,7 @@ namespace Sudoku
                         but.Click += buttonPole_Click;
                     }
                     Thread.Sleep(13);
-                    this.Controls.Add(but);
+                    Controls.Add(but);
                 }
             }
         }
@@ -69,6 +60,32 @@ namespace Sudoku
             FormVariants variants = new FormVariants();
             int variant = variants.variantStart();
             but.Text = variant.ToString();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            int num = 2;
+            for (int i = 0; i < 9; ++i)
+            {
+                for (int j = 0; j < 9; ++j)
+                {
+                    if (graund.graund[i, j].ToString() != this.Controls[num].Text)
+                    {
+                        MessageBox.Show("OHIBKA", "PORAG");
+                        return;                      
+                    }
+                    else
+                    {
+                        num++;
+                    }
+                }
+            }
+            MessageBox.Show("WIN", "WIN");
+        }
+
+        private void labelTime_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
